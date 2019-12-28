@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": true,
+    "outDir": "build",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2015",
+    "noImplicitAny": true,
+    "lib": ["es7", "es2015.promise", "esnext.asynciterable", "es2015"],
+    "skipLibCheck": false,
+    "alwaysStrict": true,
+    "removeComments": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "typeRoots": ["node_modules/@types", "src/graphql/types"]
+  },
+  "compileOnSave": true,
+  "exclude": ["node_modules"],
+  "include": ["src"]
+}
