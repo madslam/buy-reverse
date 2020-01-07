@@ -34,10 +34,10 @@ const ProductList = () => {
     <React.Fragment>
       <div className="container">
         <div className="shelf-container">
-          {user.productsfav ? (
+          {user.productsUser ? (
             <div>
-              <h3>Favoris</h3>
-              {user.productsfav.map(p => {
+              <h3>Mes Annonces</h3>
+              {user.productsUser.map(p => {
                 return (
                   <Product
                     product={p}
@@ -48,13 +48,13 @@ const ProductList = () => {
               })}
             </div>
           ) : (
-            <h2>Pas de Favoris</h2>
+            <h2>Pas d'annonces</h2>
           )}
         </div>
       </div>
     </React.Fragment>
   ) : (
-    <h2>Vous devez etre connecté pour accéder à vos favoris</h2>
+    <h2>Vous devez etre connecté pour accéder à vos annonces</h2>
   );
 };
 

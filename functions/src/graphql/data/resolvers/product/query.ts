@@ -3,7 +3,10 @@ const getProducts = async (
   x: null | undefined,
   {db}: any
 ) => {
-  const productsDoc = await db.collection('products').get();
+  const productsDoc = await db
+    .collection('products')
+    .where('avalaible', '==', true)
+    .get();
   return productsDoc.docs.map((product: any) => ({
     id: product.id,
     ...product.data(),

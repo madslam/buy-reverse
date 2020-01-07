@@ -13,8 +13,9 @@ const useStyles = makeStyles(theme => ({
     float: ' left',
     minWidth: ' 140px',
     width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: ' 19%',
+
+    [theme.breakpoints.up('md')]: {
+      width: ' 18%',
     },
     position: ' relative',
     textAlign: ' center',
@@ -45,7 +46,7 @@ const Product = ({product, addProduct}) => {
 
     const urlImage = await firebase
       .storage()
-      .ref(`images/${firstImage}`)
+      .ref(`${firstImage}`)
       .getDownloadURL();
     console.log(urlImage);
     setImg(urlImage);

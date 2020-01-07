@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Carousel from 'nuka-carousel';
-import firebase from 'firebase';
 import {useQuery} from 'react-apollo';
 import {GET_PRODUCT} from '../../apollo/query/product';
 
 import SideBar from './SideBar';
+import {getImage} from '../../firebase';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -51,6 +51,7 @@ const useStyles = makeStyles(theme => ({
     margin: '0 auto',
   },
   image: {
+    objectFit: 'scale-down',
     height: '40vh',
     [theme.breakpoints.up('lg')]: {
       height: '80vh',
@@ -64,25 +65,13 @@ export default ({match}) => {
   const classes = useStyles();
   const [imgs, setImgs] = useState([]);
 
-  const getImage = async images => {
-    const imgsUrl = [];
-
-    for (const nameImg of images) {
-      let imgUrl = await firebase
-        .storage()
-        .ref(`images/${nameImg}`)
-        .getDownloadURL();
-      imgsUrl.push(imgUrl);
-    }
-
-    setImgs(imgsUrl);
-  };
-
   const {data, loading: loadProduct} = useQuery(GET_PRODUCT, {
     variables: {id: match.params.id},
-    onCompleted: data => getImage(data.getProduct.images),
-    onError: error =>
-      console.log(`erreur lors du chargement: ${error} ${match.params.id}`),
+    onCompleted: async data => {
+      const imgsUrl = await getImage(data.getProduct.images);
+      setImgs(imgsUrl);
+    },
+    onError: error => console.log(`erreur lors du chargement: ${error}`),
   });
   const product = data && data.getProduct;
 
@@ -104,6 +93,6 @@ export default ({match}) => {
       <SideBar product={product} />
     </div>
   ) : (
-    <p> pas de produit </p>
+    <h3> pas de produit </h3>
   );
 };

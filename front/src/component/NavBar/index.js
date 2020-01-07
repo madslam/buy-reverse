@@ -128,9 +128,14 @@ export default props => {
           <div className={classes.grow}>
             {user ? (
               <Grid container>
-                <IconButton color="secondary" aria-label="add to shopping cart">
-                  <LikeIcon fontSize="large" />
-                </IconButton>
+                <Link to="/productFav" className={classes.link}>
+                  <IconButton
+                    color="secondary"
+                    aria-label="add to shopping cart"
+                  >
+                    <LikeIcon fontSize="large" />
+                  </IconButton>
+                </Link>
 
                 <Avatar
                   alt="avatar"
@@ -146,6 +151,11 @@ export default props => {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
+                  <MenuItem>
+                    <Link to="/productUser" className={classes.link}>
+                      Mes Annonces
+                    </Link>
+                  </MenuItem>
                   <MenuItem
                     onClick={() => {
                       firebase.auth().signOut();

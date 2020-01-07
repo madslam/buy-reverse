@@ -7,10 +7,10 @@ export const INIT_MODAL_ACTION = 'MODAL/INIT_MODAL';
 export const TOGGLE_MODAL_ACTION = 'MODAL/TOGGLE';
 
 // CREATE ACTIONS
-export const ON_CHANGE = createAction (ON_CHANGE_ACTION);
-export const CLEAR_MODAL = createAction (CLEAR_ACTION);
-export const INIT_MODAL = createAction (INIT_MODAL_ACTION);
-export const TOGGLE_MODAL = createAction (TOGGLE_MODAL_ACTION);
+export const ON_CHANGE = createAction(ON_CHANGE_ACTION);
+export const CLEAR_MODAL = createAction(CLEAR_ACTION);
+export const INIT_MODAL = createAction(INIT_MODAL_ACTION);
+export const TOGGLE_MODAL = createAction(TOGGLE_MODAL_ACTION);
 
 // INITIAL STATE
 export const initialState = {
@@ -19,7 +19,6 @@ export const initialState = {
 
 // REDUCER FUNCTION
 const onChange = (state, {payload: {entity, ...props}}) => {
-  console.log ('isssu', entity, props);
   return {
     productSelected: props.product,
   };
@@ -60,7 +59,7 @@ const clearModal = (state, {payload: {entity}}) =>
   };
 
 // REDUCER
-const reducers = createReducer (initialState, {
+const reducers = createReducer(initialState, {
   [ON_CHANGE]: onChange,
   [INIT_MODAL]: initModal,
   [CLEAR_MODAL]: clearModal,

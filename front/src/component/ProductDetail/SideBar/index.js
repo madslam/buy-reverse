@@ -6,7 +6,11 @@ import Divider from '@material-ui/core/Divider';
 import firebase from 'firebase';
 import Grid from '@material-ui/core/Grid';
 import LikeIcon from '@material-ui/icons/FavoriteBorder';
+import ChangeIcon from '@material-ui/icons/Build';
 import LikeIconFilled from '@material-ui/icons/Favorite';
+import DeleteIcon from '@material-ui/icons/DeleteForeverOutlined';
+import {useHistory} from 'react-router-dom';
+
 import Paper from '@material-ui/core/Paper';
 import React, {useState, useEffect} from 'react';
 import Table from '@material-ui/core/Table';
@@ -15,8 +19,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 
-import {ADD_FAV, REMOVE_FAV} from '../../../apollo/query/user';
-import {GET_USER} from '../../../apollo/query/user';
+import {GET_USER, ADD_FAV, REMOVE_FAV} from '../../../apollo/query/user';
+import {REMOVE_PRODUCT} from '../../../apollo/query/product';
 
 const useStyles = makeStyles(theme => ({
   sideBar: {
@@ -46,6 +50,8 @@ const useStyles = makeStyles(theme => ({
 
 export default ({product}) => {
   const classes = useStyles();
+  const history = useHistory();
+
   const [userId, setUserId] = useState('');
 
   const [getUser, {loading: loadUser, data: dataUser}] = useLazyQuery(
@@ -79,6 +85,20 @@ export default ({product}) => {
       },
     ],
   });
+  const [removeProduct, {loading: loadRemove}] = useMutation(REMOVE_PRODUCT, {
+    variables: {product, userId: userId},
+    onCompleted: () => {
+      console.log('Produit supprimé avec succés !', {
+        variant: 'success',
+      });
+    },
+    onError: error => {
+      console.log(`erreur lors de la supression d'un produit : ${error}`, {
+        variant: 'error',
+      });
+      console.log(error);
+    },
+  });
   useEffect(() => {
     firebase.auth().onAuthStateChanged(user => {
       console.log('aya', user.uid);
@@ -96,38 +116,91 @@ export default ({product}) => {
       alert('connecte toi pour ajouter des favs bro');
       return false;
     }
-    if (user.favProduct.includes(product.id)) {
+    if (user.favProductsId.includes(product.id)) {
       alert('déjà dans les fav');
     }
     addFav();
   };
-  const isFav = () => {
-    if (user)
-      if (user.favProduct.includes(product.id)) {
-        return (
-          <Button
-            className={classes.button}
-            color="secondary"
-            startIcon={<LikeIconFilled />}
-            onClick={removeFav}
-          >
-            Favoris
-          </Button>
-        );
-      }
-    return (
+
+  const BuyButton = () => (
+    <Grid item className={classes.button}>
       <Button
         className={classes.button}
-        variant="outlined"
+        variant="contained"
         color="primary"
-        startIcon={<LikeIcon />}
-        onClick={handleFav}
+        startIcon={<AddShoppingIcon />}
       >
-        Favoris
+        Acheter
       </Button>
+    </Grid>
+  );
+  const isFav = () => {
+    return (
+      <React.Fragment>
+        <BuyButton />
+        <Button
+          className={classes.button}
+          color="secondary"
+          startIcon={<LikeIconFilled />}
+          onClick={removeFav}
+        >
+          Favoris
+        </Button>{' '}
+      </React.Fragment>
     );
   };
 
+  const isUser = () => {
+    return (
+      <React.Fragment>
+        <Grid item className={classes.button}>
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            startIcon={<ChangeIcon />}
+            onClick={() => {
+              history.push(`/productModify/${product.id}`);
+            }}
+          >
+            Modifier
+          </Button>
+        </Grid>
+        <Grid item className={classes.button}>
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            onClick={removeProduct}
+            startIcon={<DeleteIcon />}
+          >
+            Supprimer
+          </Button>
+        </Grid>
+      </React.Fragment>
+    );
+  };
+
+  const buttonAction = () => {
+    if (user) {
+      if (user.userProductsId.includes(product.id)) return isUser();
+      if (user.favProductsId.includes(product.id)) return isFav();
+    }
+    return (
+      <React.Fragment>
+        <BuyButton />
+        <Button
+          className={classes.button}
+          variant="outlined"
+          color="primary"
+          startIcon={<LikeIcon />}
+          onClick={handleFav}
+        >
+          Favoris
+        </Button>
+      </React.Fragment>
+    );
+  };
   return (
     <div className={classes.container}>
       <Paper className={classes.sideBar}>
@@ -195,20 +268,7 @@ export default ({product}) => {
             alignItems="center"
             spacing={2}
           >
-            <Grid item className={classes.button}>
-              <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                startIcon={<AddShoppingIcon />}
-              >
-                Acheter
-              </Button>
-            </Grid>
-
-            <Grid item className={classes.button}>
-              {isFav()}
-            </Grid>
+            {buttonAction()}
           </Grid>
         </Grid>
       </Paper>

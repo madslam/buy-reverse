@@ -12,16 +12,23 @@ const typeDefs = gql`
     images: [String]
     view: Int!
     fav: Int!
+    sellerId: String!
+    seller: User
+    avalaible: boolean!
   }
   type User {
     id: ID!
-    favProduct: [String]
-    listProduct: [String]
+    favProductsId: [String]
+    productsfav: [Product]
+    userProductsId: [String]
+    productsUser: [Product]
   }
   input UserInput {
     id: ID
-    favProduct: [String]
-    listProduct: [String]
+    favProductsId: [String]
+    productsfav: [ProductInput]
+    userProductsId: [String]
+    productsUser: [ProductInput]
   }
   input ProductInput {
     id: ID
@@ -34,6 +41,9 @@ const typeDefs = gql`
     images: [String]
     view: Int
     fav: Int
+    sellerId: String
+    seller: UserInput
+    avalaible: boolean!
   }
   type Query {
     getProducts: [Product]
@@ -41,7 +51,9 @@ const typeDefs = gql`
     getProduct(id: String): Product
   }
   type Mutation {
-    createProduct(product: ProductInput!): Product
+    createProduct(product: ProductInput!, userId: String!): Product
+    modifyProduct(product: ProductInput!, userId: String!): Product
+    removeProduct(product: ProductInput!, userId: String!): Product
     createUser(user: UserInput!): User
     addFav(user: UserInput!, product: ProductInput!): User
     removeFav(user: UserInput!, product: ProductInput!): User

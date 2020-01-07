@@ -1,11 +1,26 @@
-import {gql} from 'apollo-boost';
+import gql from 'graphql-tag';
 
 export const GET_USER = gql`
   query getUser($id: String!) {
     getUser(id: $id) {
       id
-      favProduct
-      listProduct
+      favProductsId
+      productsfav {
+        id
+        title
+        description
+        priceCurrent
+        images
+      }
+      userProductsId
+      productsUser {
+        id
+        title
+        description
+        priceCurrent
+        images
+      }
+      userProductsId
     }
   }
 `;

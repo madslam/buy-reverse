@@ -1,5 +1,4 @@
 import {makeStyles} from '@material-ui/core/styles';
-import {useMutation} from 'react-apollo';
 import {useSnackbar} from 'notistack';
 import Button from '@material-ui/core/Button';
 import firebase from 'firebase';
@@ -9,8 +8,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import React, {useState, useEffect} from 'react';
 import TextField from '@material-ui/core/TextField';
 
-import DropZone from './DropZone';
-import {CREATE_PRODUCT} from '../../apollo/query/product';
+import DropZone from '../DropZone';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -29,65 +27,26 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default () => {
+export default ({user, product, files, mutation, setProduct, setFiles}) => {
   const classes = useStyles();
-  const {enqueueSnackbar} = useSnackbar();
-
-  const [product, setProduct] = useState({
-    title: '',
-    description: '',
-    priceMax: '',
-    priceMin: '',
-    sellingTime: 6,
-    images: [],
-  });
-  const [files, setFiles] = useState([]);
-  const [user, setUser] = useState([]);
-
-  useEffect(() => {
-    firebase.auth().onAuthStateChanged(user => {
-      console.log('lol', firebase.auth().currentUser);
-      setUser(user);
-    });
-  }, []);
-  const uploadImages = () => {
-    files.forEach(element => {
-      console.log(element);
-      const storageRef = firebase.storage().ref(`images/${element.filename}`);
-      storageRef.put(element.file);
-    });
-  };
-
-  const [mutation, {loading}] = useMutation(CREATE_PRODUCT, {
-    variables: {product},
-    onCompleted: data => {
-      enqueueSnackbar('Produit ajouté avec succés !', {
-        variant: 'success',
-      });
-      uploadImages();
-    },
-    onError: error => {
-      enqueueSnackbar(`erreur lors de l'ajout d'un produit : ${error}`, {
-        variant: 'error',
-      });
-      console.log(error);
-    },
-  });
 
   const addImagesProduct = acceptedFiles => {
     const timestamp = Math.round(+new Date() / 1000);
     const images = [
       ...product.images,
-      ...acceptedFiles.map(file => `thumb@${timestamp}_${file.name}`),
+      ...acceptedFiles.map(file => `thumbs/${timestamp}_${file.name}`),
     ];
     setProduct({...product, images});
     setFiles([
       ...files,
-      ...acceptedFiles.map(file => ({
-        file,
-        preview: URL.createObjectURL(file),
-        filename: `thumb@${timestamp}_${file.name}`,
-      })),
+      ...acceptedFiles.map(file => {
+        console.log(URL.createObjectURL(file));
+        return {
+          file,
+          preview: URL.createObjectURL(file),
+          filename: `thumbs/${timestamp}_${file.name}`,
+        };
+      }),
     ]);
   };
   const deleteImageProduct = file => {
@@ -254,7 +213,7 @@ export default () => {
             />
           </Grid>
         </Grid>
-        <Button variant="contained" color="primary" onClick={mutation}>
+        <Button variant="contained" color="primary" onClick={() => mutation()}>
           Ajouter
         </Button>
       </FormControl>

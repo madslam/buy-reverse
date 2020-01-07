@@ -4,8 +4,8 @@ const createUser = async (_: null, {user}: any, {db}: any) => {
     .doc(user.id)
     .set({
       ...user,
-      favProduct: [],
-      listProduct: [],
+      favProductsId: [],
+      userProductsId: [],
     });
 
   return {id: newUser.id, ...user};
@@ -16,7 +16,7 @@ const addFav = async (_: null, {user, product}: any, {db}: any) => {
     .collection('users')
     .doc(user.id)
     .update({
-      favProduct: [...user.favProduct, product.id],
+      favProductsId: [...user.favProductsId, product.id],
     });
   await db
     .collection('products')
@@ -26,7 +26,7 @@ const addFav = async (_: null, {user, product}: any, {db}: any) => {
   return {...user};
 };
 const removeFav = async (_: null, {user, product}: any, {db}: any) => {
-  const filteredFav = user.favProduct.filter(
+  const filteredFav = user.favProductsId.filter(
     (productId: any) => productId !== product.id
   );
 
@@ -34,7 +34,7 @@ const removeFav = async (_: null, {user, product}: any, {db}: any) => {
     .collection('users')
     .doc(user.id)
     .update({
-      favProduct: filteredFav,
+      favProductsId: filteredFav,
     });
   await db
     .collection('products')
